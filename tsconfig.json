@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "Bundler",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
+        "strict": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "ignoreDeprecations": "6.0",
+        "skipLibCheck": true,
+        "verbatimModuleSyntax": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "types": ["bun-types"]
+    },
+    "include": ["src/**/*.ts"]
+}

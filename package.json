@@ -1,0 +1,14 @@
+{
+    "name": "food",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "format": "oxfmt",
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "oxfmt": "^0.45.0",
+        "typescript": "^6"
+    }
+}
