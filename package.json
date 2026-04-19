@@ -3,12 +3,16 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "build:tw": "bun x @tailwindcss/cli -i ./src/templates/tw.css -o ./src/templates/index.css",
+        "dev": "bun run src/index.ts",
         "format": "oxfmt",
         "typecheck": "tsc --noEmit"
     },
     "devDependencies": {
+        "@tailwindcss/cli": "^4.2.2",
         "@types/bun": "latest",
         "oxfmt": "^0.45.0",
+        "tailwindcss": "^4.2.2",
         "typescript": "^6"
     }
 }
