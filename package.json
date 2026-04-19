@@ -4,7 +4,7 @@
     "type": "module",
     "scripts": {
         "build:tw": "bun x @tailwindcss/cli -i ./src/templates/tw.css -o ./src/templates/index.css",
-        "dev": "bun run src/index.ts",
+        "dev": "bun run build:tw & bun run src/index.ts",
         "format": "oxfmt",
         "typecheck": "tsc --noEmit"
     },
