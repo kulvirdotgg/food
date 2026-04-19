@@ -82,5 +82,11 @@
 	}
 	body {
 		@apply bg-background text-foreground font-mono;
+		background-image:
+			linear-gradient(rgba(201, 111, 45, 0.05) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(201, 111, 45, 0.05) 1px, transparent 1px);
+		background-size:
+			calc(var(--spacing) * 12) calc(var(--spacing) * 12),
+			calc(var(--spacing) * 12) calc(var(--spacing) * 12);
 	}
 }
