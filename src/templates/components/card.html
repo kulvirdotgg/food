@@ -1,0 +1,12 @@
+<article class="grid content-start gap-2 border bg-card px-2.5 py-2.5 text-card-foreground col-span-1 sm:px-3">
+    <div class="flex items-start justify-between gap-2 border-b pb-2">
+        <div class="grid gap-1">
+            <p class="m-0 text-sm font-semibold uppercase tracking-widest text-card-foreground sm:text-base">
+                <%= it.name %>
+            </p>
+            <p class="m-0 text-xs uppercase tracking-widest text-muted-foreground"><%= it.meta %></p>
+        </div>
+        <p class="m-0 shrink-0 text-xs uppercase tracking-widest text-accent">#<%= it.index %></p>
+    </div>
+    <div class="flex flex-wrap gap-1.5"><%~ it.ingredients %></div>
+</article>

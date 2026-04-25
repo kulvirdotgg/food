@@ -1,4 +1,4 @@
-/*! tailwindcss v4.2.2 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
 @layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
@@ -189,6 +189,9 @@
   .z-20 {
     z-index: 20;
   }
+  .col-span-2 {
+    grid-column: span 2 / span 2;
+  }
   .m-0 {
     margin: calc(var(--spacing) * 0);
   }
@@ -213,9 +216,6 @@
   .max-w-5xl {
     max-width: var(--container-5xl);
   }
-  .min-w-0 {
-    min-width: calc(var(--spacing) * 0);
-  }
   .shrink-0 {
     flex-shrink: 0;
   }
@@ -224,9 +224,6 @@
   }
   .place-items-center {
     place-items: center;
-  }
-  .content-start {
-    align-content: flex-start;
   }
   .items-center {
     align-items: center;
@@ -262,9 +259,6 @@
   .border-b {
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
-  }
-  .border-border {
-    border-color: var(--border);
   }
   .border-primary {
     border-color: var(--primary);
@@ -322,9 +316,6 @@
   }
   .text-center {
     text-align: center;
-  }
-  .text-left {
-    text-align: left;
   }
   .text-3xl {
     font-size: var(--text-3xl);
@@ -427,11 +418,6 @@
       outline-style: none;
     }
   }
-  .sm\:col-span-2 {
-    @media (width >= 40rem) {
-      grid-column: span 2 / span 2;
-    }
-  }
   .sm\:p-3 {
     @media (width >= 40rem) {
       padding: calc(var(--spacing) * 3);
@@ -472,11 +458,6 @@
     @media (width >= 40rem) {
       font-size: var(--text-base);
       line-height: var(--tw-leading, var(--text-base--line-height));
-    }
-  }
-  .lg\:col-span-2 {
-    @media (width >= 64rem) {
-      grid-column: span 2 / span 2;
     }
   }
   .lg\:px-8 {
