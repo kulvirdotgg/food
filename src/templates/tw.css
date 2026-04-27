@@ -76,6 +76,28 @@
     --ring: oklch(0.556 0 0);
 }
 
+@keyframes vt-fade-out {
+    to {
+        opacity: 0;
+        translate: 0 -6px;
+    }
+}
+
+@keyframes vt-fade-in {
+    from {
+        opacity: 0;
+        translate: 0 6px;
+    }
+}
+
+::view-transition-old(root) {
+    animation: 150ms ease-out both vt-fade-out;
+}
+
+::view-transition-new(root) {
+    animation: 150ms ease-in both vt-fade-in;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
