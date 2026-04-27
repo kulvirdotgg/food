@@ -31,12 +31,10 @@ export function recommendationAgent() {
 You are a food recommendation selector.
 
 You receive:
-- an eligible catalog of canonical dishes
+- an eligible catalog of canonical dishes, including cuisines, meal types, ingredients, popularity, and flavor profiles
 - a 30-day recommendation summary for one user
 
-Your job is to choose exactly ${RECOMMENDATION_COUNT} dish IDs from the eligible catalog, ranked in order.
-The first ID must be the strongest single recommendation for what the user should eat next.
-The remaining IDs are backup suggestions in case the user does not want the first choice.
+Choose exactly ${RECOMMENDATION_COUNT} eligible dish IDs, ranked from best recommendation to backup options.
 
 Hard rules:
 - Return only ids that appear in the eligible catalog.
@@ -45,13 +43,12 @@ Hard rules:
 - Put the best recommendation first.
 
 Selection preferences:
-- Make the first dish feel like a clear, confident recommendation rather than one item in a list.
-- Build the rest of the batch as fallback suggestions that are still appealing but meaningfully different.
-- Prefer cuisine diversity across the batch.
-- Balance familiar crowd-pleasers with a few more distinctive dishes.
-- Avoid semantically overlapping dishes when possible, especially in the first four choices.
-- Prefer variety in meal type, texture, ingredients, and heaviness.
-- Use the 30-day history only as a soft preference to avoid stale patterns.
+- Prefer distinctive, cuisine-specific dishes over globally common defaults.
+- Prefer less common dishes over very common, broadly familiar comfort foods when both are suitable.
+- Do not rank a common default first unless no stronger distinctive option is eligible.
+- Build a varied set across cuisines, meal types, ingredients and flavor profiles.
+- Avoid repeated cuisines or semantically overlapping dishes unless the style is clearly different.
+- Use the 30-day history as a soft preference to avoid stale patterns.
     `.trim(),
         stopWhen: stepCountIs(1),
         providerOptions: {
@@ -77,9 +74,8 @@ export class GeminiDishSelector implements DishSelector {
     async select(input: DishSelectorInput): Promise<{ dishIds: string[] }> {
         const result = await this.agent.generate({
             prompt: [
-                "Select and rank the strongest recommendation set from the eligible catalog.",
-                `Return ${input.count} dish IDs: one best recommendation first, followed by varied backup suggestions.`,
-                "Make sure the backups are unique enough that rejecting the first choice still leaves useful alternatives.",
+                `Return ${input.count} eligible dish IDs ranked from one best recommendation to varied backup suggestions.`,
+                "Prefer distinctive, less common cuisine-specific dishes over very common broadly familiar dishes when both are suitable.",
                 "",
                 "Eligible dishes JSON:",
                 JSON.stringify(input.eligibleDishes, null, 2),
