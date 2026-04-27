@@ -4,18 +4,23 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Food</title>
-        <meta name="description" content="A food recommendation app." />
+        <meta name="description" content="AI powered food recommendations." />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Food Recommender" />
+        <meta property="og:description" content="AI powered food recommendations." />
         <link rel="stylesheet" href="./index.css" />
         <script type="module" src="./htmx.ts"></script>
     </head>
     <body class="min-h-screen overflow-x-hidden antialiased">
         <!-- radial gradients: soft orange cricles creating glow effect -->
         <div
+            aria-hidden="true"
             class="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(198,85,32,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(201,111,45,0.12),transparent_24%)]"
         ></div>
 
         <main class="grid min-h-screen place-items-center px-4 py-8 sm:px-6 lg:px-8">
-            <section class="w-full max-w-5xl border bg-card p-2 sm:p-3">
+            <section aria-label="Food recommendation terminal" class="w-full max-w-5xl border bg-card p-2 sm:p-3">
                 <div class="z-20 border bg-background/90 p-3 sm:p-4">
                     <div
                         class="flex flex-wrap items-center justify-between gap-2 border-b pb-1 text-xs uppercase tracking-widest text-muted-foreground"
@@ -33,6 +38,8 @@
                                 queue up your next meal.
                             </h1>
                             <button
+                                type="button"
+                                aria-label="Generate food recommendations"
                                 hx-post="/api/recommend"
                                 hx-target="#content"
                                 hx-swap="innerHTML transition:true"
@@ -44,11 +51,20 @@
                         </div>
 
                         <!-- loading skeleton state - shown while /api/recommend is in flight -->
-                        <div id="skeleton" class="hidden grid gap-6 justify-items-center text-center">
+                        <div
+                            id="skeleton"
+                            role="status"
+                            aria-live="polite"
+                            aria-label="Loading food recommendations"
+                            class="hidden grid gap-6 justify-items-center text-center"
+                        >
                             <p class="text-xs font-semibold uppercase tracking-widest text-accent">
                                 [ scanning pantry ]
                             </p>
-                            <div class="grid w-full max-w-6xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+                            <div
+                                aria-hidden="true"
+                                class="grid w-full max-w-6xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"
+                            >
                                 <div class="grid content-start gap-3 border bg-card/60 px-4 py-4 sm:px-5 col-span-1">
                                     <div class="h-4 w-1/2 animate-pulse bg-muted"></div>
                                     <div class="h-3 w-2/3 animate-pulse bg-muted"></div>

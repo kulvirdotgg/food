@@ -1,4 +1,5 @@
 <article
+    aria-label="recommendation item"
     class="grid content-start gap-2 border bg-card px-2.5 py-2.5 text-card-foreground text-left col-span-1 sm:px-3"
 >
     <div class="flex items-start justify-between gap-2 border-b pb-2">
@@ -10,5 +11,5 @@
         </div>
         <p class="m-0 shrink-0 text-xs uppercase tracking-widest text-accent">#<%= it.index %></p>
     </div>
-    <div class="flex flex-wrap gap-1.5"><%~ it.ingredients %></div>
+    <div aria-label="Top ingredients" class="flex flex-wrap gap-1.5"><%~ it.ingredients %></div>
 </article>
