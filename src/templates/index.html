@@ -11,6 +11,15 @@
         <meta property="og:description" content="AI powered food recommendations." />
         <link rel="stylesheet" href="./index.css" />
         <script type="module" src="./htmx.ts"></script>
+        <script>
+            function showSkeleton() {
+                const toggle = () => {
+                    landing.classList.add("hidden")
+                    skeleton.classList.remove("hidden")
+                }
+                document.startViewTransition ? document.startViewTransition(toggle) : toggle()
+            }
+        </script>
     </head>
     <body class="min-h-screen overflow-x-hidden antialiased">
         <!-- radial gradients: soft orange cricles creating glow effect -->
@@ -43,7 +52,7 @@
                                 hx-post="/api/recommend"
                                 hx-target="#content"
                                 hx-swap="innerHTML transition:true"
-                                hx-on::before-request="landing.classList.add('hidden');skeleton.classList.remove('hidden')"
+                                hx-on::before-request="showSkeleton()"
                                 class="border border-primary px-4 py-2.5 bg-primary text-sm font-semibold uppercase text-primary-foreground tracking-widest transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-ring/20"
                             >
                                 [ Generate Recommendations ]

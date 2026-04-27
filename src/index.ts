@@ -25,7 +25,7 @@ function recommendationsHTML(dishes: Dish[]): string {
             return eta.renderString(cardTpl, {
                 name: dish.name,
                 meta: dish.cuisines.join(" · "),
-                index: String(idx),
+                index: String(idx + 1),
                 ingredients,
             })
         })
