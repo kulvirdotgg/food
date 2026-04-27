@@ -21,17 +21,25 @@ function recommendationsHTML(dishes: Dish[]): string {
     const cards = dishes
         .map((dish, idx) => {
             const ingredients = dish.ingredients.map((label) => eta.renderString(badgeTpl, { label })).join("")
+            const isPrimary = idx === 0
 
             return eta.renderString(cardTpl, {
                 name: dish.name,
                 meta: dish.cuisines.join(" · "),
-                index: String(idx + 1),
+                index: isPrimary ? "01" : String(idx + 1).padStart(2, "0"),
+                label: idx === 0 ? "Recommended" : "Alternative",
+                prominenceClass: isPrimary
+                    ? "sm:col-span-2 lg:col-span-3 border-primary/70 bg-primary/10"
+                    : "col-span-1",
                 ingredients,
             })
         })
         .join("")
 
-    return eta.renderString(gridTpl, { header: "[ recommendations ready ]", cards })
+    return eta.renderString(gridTpl, {
+        header: "[ recommendation ready ]",
+        cards,
+    })
 }
 
 const server = Bun.serve({

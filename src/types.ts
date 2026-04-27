@@ -14,12 +14,16 @@ export type MealType =
     | "soup"
     | "street_food"
 
+export type DishPopularity = "common" | "moderate" | "distinctive"
+
 export type Dish = {
     id: string
     name: string
     cuisines: string[]
     meal_type: MealType
     ingredients: string[]
+    popularity: DishPopularity
+    flavor_profile: string[]
 }
 
 export type HistoryRow = {
@@ -35,6 +39,8 @@ export type HistoryDishSummary = {
     cuisines: string[]
     meal_type: MealType
     ingredients: string[]
+    popularity: DishPopularity
+    flavor_profile: string[]
     shown_count: number
     last_recommended_at: string
 }

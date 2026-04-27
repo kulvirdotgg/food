@@ -99,6 +99,8 @@ export class RecommendationService {
                 cuisines: dish.cuisines,
                 meal_type: dish.meal_type,
                 ingredients: dish.ingredients,
+                popularity: dish.popularity,
+                flavor_profile: dish.flavor_profile,
                 shown_count,
                 last_recommended_at,
             }))

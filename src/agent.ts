@@ -19,7 +19,9 @@ const recommendationOutputSchema = z.object({
     dishIds: z
         .array(z.string())
         .length(RECOMMENDATION_COUNT)
-        .describe(`Exactly ${RECOMMENDATION_COUNT} dish ids selected from the eligible catalog.`),
+        .describe(
+            `Exactly ${RECOMMENDATION_COUNT} dish ids selected from the eligible catalog, ordered from best recommendation to backup options.`,
+        ),
 })
 
 export function recommendationAgent() {
@@ -32,17 +34,23 @@ You receive:
 - an eligible catalog of canonical dishes
 - a 30-day recommendation summary for one user
 
-Your job is to choose exactly ${RECOMMENDATION_COUNT} dish IDs from the eligible catalog.
+Your job is to choose exactly ${RECOMMENDATION_COUNT} dish IDs from the eligible catalog, ranked in order.
+The first ID must be the strongest single recommendation for what the user should eat next.
+The remaining IDs are backup suggestions in case the user does not want the first choice.
 
 Hard rules:
 - Return only ids that appear in the eligible catalog.
 - Return exactly ${RECOMMENDATION_COUNT} ids.
 - Do not invent dish names or ids.
+- Put the best recommendation first.
 
 Selection preferences:
-- Build a broad idea set that feels varied to a human deciding what to eat.
+- Make the first dish feel like a clear, confident recommendation rather than one item in a list.
+- Build the rest of the batch as fallback suggestions that are still appealing but meaningfully different.
 - Prefer cuisine diversity across the batch.
-- Avoid semantically overlapping dishes when possible.
+- Balance familiar crowd-pleasers with a few more distinctive dishes.
+- Avoid semantically overlapping dishes when possible, especially in the first four choices.
+- Prefer variety in meal type, texture, ingredients, and heaviness.
 - Use the 30-day history only as a soft preference to avoid stale patterns.
     `.trim(),
         stopWhen: stepCountIs(1),
@@ -69,8 +77,9 @@ export class GeminiDishSelector implements DishSelector {
     async select(input: DishSelectorInput): Promise<{ dishIds: string[] }> {
         const result = await this.agent.generate({
             prompt: [
-                "Select the strongest recommendation set from the eligible catalog.",
-                `Think about giving the user ${input.count} genuinely different meal ideas.`,
+                "Select and rank the strongest recommendation set from the eligible catalog.",
+                `Return ${input.count} dish IDs: one best recommendation first, followed by varied backup suggestions.`,
+                "Make sure the backups are unique enough that rejecting the first choice still leaves useful alternatives.",
                 "",
                 "Eligible dishes JSON:",
                 JSON.stringify(input.eligibleDishes, null, 2),
