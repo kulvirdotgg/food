@@ -1,15 +1,19 @@
 import { Eta } from "eta"
 
 import index from "@/templates/index.html"
-import { GeminiDishSelector } from "@/agent"
+import { exploratoryDishSelector, recommendationDishSelector } from "@/agent"
 import { initDb } from "@/db"
 import { RecommendationService } from "@/recommend"
-import type { Dish } from "@/types"
+import type { DishRecommendation } from "@/types"
 
 const eta = new Eta({ autoEscape: true })
 
 const db = initDb()
-const service = new RecommendationService({ db, selector: new GeminiDishSelector() })
+const service = new RecommendationService({
+    db,
+    recommendationSelector: new recommendationDishSelector(),
+    exploratorySelector: new exploratoryDishSelector(),
+})
 
 const [cardTpl, badgeTpl, gridTpl] = await Promise.all([
     Bun.file(import.meta.dir + "/templates/components/card.html").text(),
@@ -17,20 +21,25 @@ const [cardTpl, badgeTpl, gridTpl] = await Promise.all([
     Bun.file(import.meta.dir + "/templates/layouts/grid.html").text(),
 ])
 
-function recommendationsHTML(dishes: Dish[]): string {
-    const cards = dishes
-        .map((dish, idx) => {
-            const ingredients = dish.ingredients.map((label) => eta.renderString(badgeTpl, { label })).join("")
+function recommendationsHTML(recommendations: DishRecommendation[]): string {
+    const cards = recommendations
+        .map((recommendation, idx) => {
+            const ingredients = recommendation.dish.ingredients
+                .map((label) => eta.renderString(badgeTpl, { label }))
+                .join("")
             const isPrimary = idx === 0
+            const isExploratory = recommendation.slot === "try_this_maybe"
 
             return eta.renderString(cardTpl, {
-                name: dish.name,
-                meta: dish.cuisines.join(" · "),
+                name: recommendation.dish.name,
+                meta: recommendation.dish.cuisines.join(" · "),
                 index: isPrimary ? "01" : String(idx + 1).padStart(2, "0"),
-                label: idx === 0 ? "Recommended" : "Alternative",
+                label: recommendation.label,
                 prominenceClass: isPrimary
                     ? "sm:col-span-2 lg:col-span-3 border-primary/70 bg-primary/10"
-                    : "col-span-1",
+                    : isExploratory
+                      ? "col-span-1 border-accent/40"
+                      : "col-span-1",
                 ingredients,
             })
         })
@@ -42,7 +51,7 @@ function recommendationsHTML(dishes: Dish[]): string {
     })
 }
 
-const server = Bun.serve({
+Bun.serve({
     port: 3000,
     idleTimeout: 255,
     routes: {
@@ -69,5 +78,3 @@ const server = Bun.serve({
         })
     },
 })
-
-console.info(`Food app running at http://localhost:${server.port}`)

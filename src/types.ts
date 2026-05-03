@@ -26,6 +26,29 @@ export type Dish = {
     flavor_profile: string[]
 }
 
+export type RecommendationSlot = "recommended" | "alternative" | "try_this_maybe"
+
+export type ExploratoryLabel =
+    | "Light Bite"
+    | "Filling Meal"
+    | "Big Flavor"
+    | "Mild and Easy"
+    | "Crispy or Crunchy"
+    | "Saucy and Rich"
+    | "Fresh and Tangy"
+    | "Good to Share"
+    | "Regional Favorite"
+    | "Something Different"
+    | "Sweet Pick"
+    | "Breakfast Pick"
+
+export type DishRecommendation = {
+    dish: Dish
+    slot: RecommendationSlot
+    label: "Recommended" | "Alternative" | ExploratoryLabel
+    reason: string
+}
+
 export type HistoryRow = {
     id: string
     dish_id: string

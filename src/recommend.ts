@@ -1,18 +1,19 @@
 import { catalog, catalogById } from "@/catalog"
 import { COOLDOWN_DAYS, HISTORY_SUMMARY_DAYS, RECOMMENDATION_COUNT } from "@/config"
 import type { DB } from "@/db"
-import type { DishSelector } from "@/agent"
-import type { Dish, HistoryDishSummary, HistoryRow, HistorySummary } from "@/types"
+import type { ExploratoryDishSelector, RecommendationDishSelector } from "@/agent"
+import type { Dish, DishRecommendation, HistoryDishSummary, HistoryRow, HistorySummary } from "@/types"
 
 interface RecommendationServiceDeps {
     db: DB
-    selector: DishSelector
+    recommendationSelector: RecommendationDishSelector
+    exploratorySelector: ExploratoryDishSelector
 }
 
 export class RecommendationService {
     constructor(private readonly deps: RecommendationServiceDeps) {}
 
-    async recommend(userId: string): Promise<Dish[]> {
+    async recommend(userId: string): Promise<DishRecommendation[]> {
         const now = new Date()
 
         const historySince = new Date(now)
@@ -34,24 +35,78 @@ export class RecommendationService {
 
         const historySignals = this.getHistorySignals(historyRows)
 
-        const result = await this.deps.selector.select({
+        const normalResult = await this.deps.recommendationSelector.select({
             eligibleDishes,
             history: historySignals,
-            count: RECOMMENDATION_COUNT,
         })
 
-        const selectedDishIds = result.dishIds
-        const selectedDishes = selectedDishIds.map((dishId) => {
-            const dish = catalogById.get(dishId)
-            if (!dish) {
-                throw new Error(`Selector selected unknown dish id: ${dishId}`)
-            }
-            return dish
+        const normalDishIds = [normalResult.recommended.dishId, ...normalResult.alternatives.map((pick) => pick.dishId)]
+        this.assertUniqueDishIds(normalDishIds, "Normal selector")
+
+        const normalDishes = this.resolveDishes(normalDishIds, "Normal selector")
+        const normalDishIdSet = new Set(normalDishIds)
+        const explorationEligibleDishes = eligibleDishes.filter((dish) => !normalDishIdSet.has(dish.id))
+
+        if (explorationEligibleDishes.length < 3) {
+            throw new Error("Not enough eligible dishes to select exploratory recommendations.")
+        }
+
+        const explorationResult = await this.deps.exploratorySelector.select({
+            eligibleDishes: explorationEligibleDishes,
+            history: historySignals,
+            normalDishes,
         })
+
+        const explorationDishIds = explorationResult.tryThisMaybe.map((pick) => pick.dishId)
+        this.assertUniqueDishIds(explorationDishIds, "Exploration selector")
+
+        const selectedDishIds = [...normalDishIds, ...explorationDishIds]
+        this.assertUniqueDishIds(selectedDishIds, "Recommendation selectors")
+
+        const selectedDishes = [...normalDishes, ...this.resolveDishes(explorationDishIds, "Exploration selector")]
+
+        if (selectedDishIds.length !== RECOMMENDATION_COUNT) {
+            throw new Error(`Recommendation selectors returned ${selectedDishIds.length} dishes.`)
+        }
 
         this.deps.db.insertRecommendationBatch(userId, selectedDishIds, now.toISOString())
 
-        return selectedDishes
+        return [
+            {
+                dish: selectedDishes[0]!,
+                slot: "recommended",
+                label: "Recommended",
+                reason: normalResult.recommended.reason,
+            },
+            ...normalResult.alternatives.map((pick, index) => ({
+                dish: selectedDishes[index + 1]!,
+                slot: "alternative" as const,
+                label: "Alternative" as const,
+                reason: pick.reason,
+            })),
+            ...explorationResult.tryThisMaybe.map((pick, index) => ({
+                dish: selectedDishes[index + 4]!,
+                slot: "try_this_maybe" as const,
+                label: pick.label,
+                reason: pick.reason,
+            })),
+        ]
+    }
+
+    private resolveDishes(dishIds: string[], selectorName: string): Dish[] {
+        return dishIds.map((dishId) => {
+            const dish = catalogById.get(dishId)
+            if (!dish) {
+                throw new Error(`${selectorName} selected unknown dish id: ${dishId}`)
+            }
+            return dish
+        })
+    }
+
+    private assertUniqueDishIds(dishIds: string[], selectorName: string): void {
+        if (new Set(dishIds).size !== dishIds.length) {
+            throw new Error(`${selectorName} returned duplicate dish ids.`)
+        }
     }
 
     private getHistorySignals(historyRows: HistoryRow[]): HistorySummary {
