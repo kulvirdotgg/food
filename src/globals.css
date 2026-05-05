@@ -53,6 +53,24 @@
 
     --font-sans: "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     --font-mono: "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+    --clerk-color-primary: oklch(0.646 0.222 41.116);
+    --clerk-color-primary-foreground: oklch(0.98 0.016 73.684);
+    --clerk-color-danger:oklch(0.58 0.22 27);
+    --clerk-color-success: #22C543;
+    --clerk-color-warning: #F36B16;
+    --clerk-color-neutral: #0A0A0A;
+    --clerk-color-foreground: oklch(1 0 0);
+    --clerk-color-background: oklch(0.145 0 0);
+    --clerk-color-input: oklch(0.922 0 0);
+    --clerk-color-input-foreground: oklch(1 0 0);
+    --clerk-color-ring: oklch(0.708 0 0);
+    --clerk-color-shimmer: #FFFFFF;
+    --clerk-color-modal-backdrop: #000000;
+    --clerk-border-radius: 0;
+    --clerk-spacing: 0.625;
+    --clerk-color-muted: oklch(0.97 0 0);
+    --clerk-color-muted-foreground: oklch(0.556 0 0);
 }
 
 .dark {
@@ -74,6 +92,24 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
+
+    --clerk-color-primary: oklch(0.705 0.213 47.604);
+    --clerk-color-primary-foreground: oklch(0.98 0.016 73.684);
+    --clerk-color-danger: oklch(0.704 0.191 22.216);
+    --clerk-color-success: #22C543;
+    --clerk-color-warning: #F36B16;
+    --clerk-color-neutral: oklch(0.985 0 0);
+    --clerk-color-input:oklch(1 0 0 / 15%); 
+    --clerk-color-input-foreground: oklch(0.985 0 0);
+    --clerk-color-foreground: oklch(0.985 0 0);
+    --clerk-color-background: oklch(0.145 0 0);
+    --clerk-color-ring: oklch(0.556 0 0);
+    --clerk-color-shimmer: #FFFFFF;
+    --clerk-color-modal-backdrop: #000000;
+    --clerk-border-radius: 0;
+    --clerk-spacing: 0.625rem;
+    --clerk-color-muted: oklch(0.269 0 0);
+    --clerk-color-muted-foreground: oklch(0.708 0 0);
 }
 
 @layer base {

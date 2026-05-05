@@ -1,9 +1,22 @@
 ---
+import { Show, SignIn, UserButton } from '@clerk/astro/components'
+
 import Layout from '../layouts/Layout.astro';
 import Home from '../components/Home.astro'
 import "../globals.css";
 ---
 
 <Layout>
-    <Home />
+    <Show when="signed-in">
+        <div class="absolute right-4 top-8 sm:right-6 lg:right-8">
+            <UserButton />
+        </div>
+    </Show>
+
+    <Show when="signed-out">
+        <SignIn />
+    </Show>
+    <Show when="signed-in">
+        <Home />
+    </Show>
 </Layout>
