@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" class="dark">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Food</title>
+        <meta name="description" content="AI powered food recommendations." />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Food Recommender" />
+        <meta property="og:description" content="AI powered food recommendations." />
+    </head>
+    <body class="min-h-screen overflow-x-hidden antialiased">
+        <!-- radial gradients: soft orange cricles creating glow effect -->
+        <div
+            aria-hidden="true"
+            class="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(198,85,32,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(201,111,45,0.12),transparent_24%)]"
+        ></div>
+
+        <main class="grid min-h-screen place-items-center px-4 py-8 sm:px-6 lg:px-8">
+            <section
+                id="terminal"
+                aria-label="Food recommendation terminal"
+                class="w-full max-w-5xl border bg-card p-2 sm:p-3"
+            >
+                <div class="z-20 border bg-background/90 p-3 sm:p-4">
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-2 border-b pb-1 text-xs uppercase tracking-widest text-muted-foreground"
+                    >
+                        <p>food://terminal</p>
+                        <p>state: ready</p>
+                    </div>
+
+                    <slot />
+
+                </div>
+            </section>
+        </main>
+    </body>
+</html>
