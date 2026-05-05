@@ -51,21 +51,25 @@
     --ring: oklch(0.708 0 0);
     --radius: 0;
 
-    --font-sans: "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    --font-mono: "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --font-sans:
+        "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas,
+        "Liberation Mono", monospace;
+    --font-mono:
+        "JetBrains Mono", "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas,
+        "Liberation Mono", monospace;
 
     --clerk-color-primary: oklch(0.646 0.222 41.116);
     --clerk-color-primary-foreground: oklch(0.98 0.016 73.684);
-    --clerk-color-danger:oklch(0.58 0.22 27);
-    --clerk-color-success: #22C543;
-    --clerk-color-warning: #F36B16;
-    --clerk-color-neutral: #0A0A0A;
+    --clerk-color-danger: oklch(0.58 0.22 27);
+    --clerk-color-success: #22c543;
+    --clerk-color-warning: #f36b16;
+    --clerk-color-neutral: #0a0a0a;
     --clerk-color-foreground: oklch(1 0 0);
     --clerk-color-background: oklch(0.145 0 0);
     --clerk-color-input: oklch(0.922 0 0);
     --clerk-color-input-foreground: oklch(1 0 0);
     --clerk-color-ring: oklch(0.708 0 0);
-    --clerk-color-shimmer: #FFFFFF;
+    --clerk-color-shimmer: #ffffff;
     --clerk-color-modal-backdrop: #000000;
     --clerk-border-radius: 0;
     --clerk-spacing: 0.625;
@@ -96,15 +100,15 @@
     --clerk-color-primary: oklch(0.705 0.213 47.604);
     --clerk-color-primary-foreground: oklch(0.98 0.016 73.684);
     --clerk-color-danger: oklch(0.704 0.191 22.216);
-    --clerk-color-success: #22C543;
-    --clerk-color-warning: #F36B16;
+    --clerk-color-success: #22c543;
+    --clerk-color-warning: #f36b16;
     --clerk-color-neutral: oklch(0.985 0 0);
-    --clerk-color-input:oklch(1 0 0 / 15%); 
+    --clerk-color-input: oklch(1 0 0 / 15%);
     --clerk-color-input-foreground: oklch(0.985 0 0);
     --clerk-color-foreground: oklch(0.985 0 0);
     --clerk-color-background: oklch(0.145 0 0);
     --clerk-color-ring: oklch(0.556 0 0);
-    --clerk-color-shimmer: #FFFFFF;
+    --clerk-color-shimmer: #ffffff;
     --clerk-color-modal-backdrop: #000000;
     --clerk-border-radius: 0;
     --clerk-spacing: 0.625rem;
@@ -120,7 +124,11 @@
         @apply bg-background text-foreground font-mono;
         background-image:
             linear-gradient(rgba(201, 111, 45, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(201, 111, 45, 0.05) 1px, transparent 1px);
+            linear-gradient(
+                90deg,
+                rgba(201, 111, 45, 0.05) 1px,
+                transparent 1px
+            );
         background-size:
             calc(var(--spacing) * 12) calc(var(--spacing) * 12),
             calc(var(--spacing) * 12) calc(var(--spacing) * 12);
