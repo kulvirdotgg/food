@@ -1,0 +1,222 @@
+import { catalog, catalogById } from "@/lib/catalog"
+import {
+    COOLDOWN_DAYS,
+    HISTORY_SUMMARY_DAYS,
+    RECOMMENDATION_COUNT,
+} from "@/lib/config"
+import {
+    getRecommendationHistory,
+    insertRecommendationBatch as insertRecommendationForUser,
+} from "@/lib/db"
+import type {
+    ExploratoryDishSelector,
+    RecommendationDishSelector,
+} from "@/lib/agent"
+
+import type {
+    Dish,
+    HistoryDishSummary,
+    HistoryRow,
+    HistorySummary,
+    RecommendationResult,
+} from "@/lib/types"
+
+interface RecommendationServiceDeps {
+    recommendationSelector: RecommendationDishSelector
+    exploratorySelector: ExploratoryDishSelector
+}
+
+export class RecommendationService {
+    constructor(private readonly deps: RecommendationServiceDeps) {}
+
+    async recommend(userId: string): Promise<RecommendationResult> {
+        const now = new Date()
+
+        const historySince = new Date(now)
+        historySince.setUTCDate(
+            historySince.getUTCDate() - HISTORY_SUMMARY_DAYS,
+        )
+
+        const historyRows = await getRecommendationHistory(
+            userId,
+            historySince.toISOString(),
+        )
+
+        const cooldownSince = new Date(now)
+        cooldownSince.setUTCDate(cooldownSince.getUTCDate() - COOLDOWN_DAYS)
+
+        const recentDishIds = new Set(
+            historyRows
+                .filter(
+                    (row) => row.recommended_at >= cooldownSince.toISOString(),
+                )
+                .map((row) => row.dish_id),
+        )
+        const eligibleDishes = catalog.filter(
+            (dish) => !recentDishIds.has(dish.id),
+        )
+
+        if (eligibleDishes.length < RECOMMENDATION_COUNT) {
+            throw new Error(
+                `Not enough eligible dishes to recommend ${RECOMMENDATION_COUNT} items.`,
+            )
+        }
+
+        const userStats = this.userRecommendationStats(historyRows)
+
+        const recommendationResult =
+            await this.deps.recommendationSelector.select({
+                eligibleDishes,
+                history: userStats,
+            })
+
+        const recommendedDishIds = [
+            recommendationResult.recommended.dishId,
+            ...recommendationResult.alternatives.map((pick) => pick.dishId),
+        ]
+
+        const recommendedDishIdSet = new Set(recommendedDishIds)
+
+        const explorationEligibleDishes = eligibleDishes.filter(
+            (dish) => !recommendedDishIdSet.has(dish.id),
+        )
+
+        if (explorationEligibleDishes.length < 3) {
+            throw new Error(
+                "Not enough eligible dishes to select exploratory recommendations.",
+            )
+        }
+
+        const recommendedDishes = this.getDishesFromId(recommendedDishIds)
+
+        const explorationResult = await this.deps.exploratorySelector.select({
+            eligibleDishes: explorationEligibleDishes,
+            history: userStats,
+            normalDishes: recommendedDishes,
+        })
+
+        const explorationDishIds = explorationResult.dishes.map(
+            (pick) => pick.dishId,
+        )
+
+        const selectedDishIds = [...recommendedDishIds, ...explorationDishIds]
+
+        const selectedDishes = [
+            ...recommendedDishes,
+            ...this.getDishesFromId(explorationDishIds),
+        ]
+
+        if (selectedDishIds.length !== RECOMMENDATION_COUNT) {
+            throw new Error(
+                `Recommendation selectors returned ${selectedDishIds.length} dishes.`,
+            )
+        }
+
+        await insertRecommendationForUser(
+            userId,
+            selectedDishIds,
+            now.toISOString(),
+        )
+
+        return {
+            recommended: {
+                dish: selectedDishes[0]!,
+                slot: "recommended",
+                label: "Recommended",
+                reason: recommendationResult.recommended.reason,
+            },
+            others: [
+                ...recommendationResult.alternatives.map((pick, index) => ({
+                    dish: selectedDishes[index + 1]!,
+                    slot: "alternative" as const,
+                    label: "Alternative" as const,
+                    reason: pick.reason,
+                })),
+                ...explorationResult.dishes.map((pick, index) => ({
+                    dish: selectedDishes[index + 4]!,
+                    slot: "try_this_maybe" as const,
+                    label: pick.label,
+                    reason: pick.reason,
+                })),
+            ],
+        }
+    }
+
+    private getDishesFromId(dishIds: string[]): Dish[] {
+        return dishIds.map((dishId) => {
+            const dish = catalogById.get(dishId)
+            if (!dish) {
+                throw new Error(`selected unknown dish id: ${dishId}`)
+            }
+            return dish
+        })
+    }
+
+    private userRecommendationStats(historyRows: HistoryRow[]): HistorySummary {
+        const cuisineCounts = new Map<string, number>()
+        const dishCounts = new Map<
+            string,
+            {
+                dish: Dish
+                shown_count: number
+                last_recommended_at: string
+            }
+        >()
+
+        for (const row of historyRows) {
+            const dish = catalogById.get(row.dish_id)
+            if (!dish) {
+                continue
+            }
+
+            for (const cuisine of dish.cuisines) {
+                cuisineCounts.set(
+                    cuisine,
+                    (cuisineCounts.get(cuisine) ?? 0) + 1,
+                )
+            }
+
+            const existing = dishCounts.get(dish.id)
+            if (existing) {
+                existing.shown_count += 1
+                if (row.recommended_at > existing.last_recommended_at) {
+                    existing.last_recommended_at = row.recommended_at
+                }
+                continue
+            }
+
+            dishCounts.set(dish.id, {
+                dish,
+                shown_count: 1,
+                last_recommended_at: row.recommended_at,
+            })
+        }
+
+        const recentlyShownDishes: HistoryDishSummary[] = Array.from(
+            dishCounts.values(),
+        )
+            .sort(
+                (a, b) =>
+                    b.shown_count - a.shown_count ||
+                    b.last_recommended_at.localeCompare(a.last_recommended_at),
+            )
+            .map(({ dish, shown_count, last_recommended_at }) => ({
+                id: dish.id,
+                name: dish.name,
+                cuisines: dish.cuisines,
+                meal_type: dish.meal_type,
+                ingredients: dish.ingredients,
+                popularity: dish.popularity,
+                flavor_profile: dish.flavor_profile,
+                shown_count,
+                last_recommended_at,
+            }))
+
+        return {
+            recentlyShownDishes,
+            topCuisines: Array.from(cuisineCounts.entries())
+                .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+                .map(([cuisine, count]) => ({ cuisine, count })),
+        }
+    }
+}
