@@ -1,0 +1,38 @@
+<div
+    aria-live="polite"
+    aria-label="Loading food recommendations"
+    class="grid justify-items-center gap-6 text-center"
+>
+    <p class="text-accent text-xs font-semibold tracking-widest uppercase">
+        [ scanning pantry ]
+    </p>
+    <div
+        aria-hidden="true"
+        class="grid w-full max-w-6xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"
+    >
+        <div
+            class="border-primary/70 bg-primary/10 grid content-start gap-3 border px-4 py-4 sm:col-span-2 sm:px-5 lg:col-span-3"
+        >
+            <div class="bg-muted h-4 w-1/2 animate-pulse"></div>
+            <div class="bg-muted h-3 w-2/3 animate-pulse"></div>
+            <div class="flex flex-wrap gap-2">
+                <span class="bg-muted h-5 w-16 animate-pulse"></span>
+                <span class="bg-muted h-5 w-20 animate-pulse"></span>
+                <span class="bg-muted h-5 w-14 animate-pulse"></span>
+            </div>
+        </div>
+        {
+            Array.from({ length: 6 }).map((_) => (
+                <div class="bg-card/60 col-span-1 grid content-start gap-3 border px-4 py-4 sm:px-5">
+                    <div class="bg-muted h-4 w-1/2 animate-pulse" />
+                    <div class="bg-muted h-3 w-2/3 animate-pulse" />
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-muted h-5 w-16 animate-pulse" />
+                        <span class="bg-muted h-5 w-20 animate-pulse" />
+                        <span class="bg-muted h-5 w-14 animate-pulse" />
+                    </div>
+                </div>
+            ))
+        }
+    </div>
+</div>
