@@ -10,9 +10,12 @@
         "format": "prettier . --write"
     },
     "dependencies": {
+        "@ai-sdk/google": "^3.0.67",
         "@astrojs/vercel": "^10.0.6",
         "@clerk/astro": "^3.1.0",
+        "@libsql/client": "^0.17.3",
         "@tailwindcss/vite": "^4.2.4",
+        "ai": "^6.0.175",
         "astro": "^6.2.2",
         "tailwindcss": "^4.2.4"
     },
