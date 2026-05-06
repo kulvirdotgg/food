@@ -7,7 +7,13 @@ import vercel from "@astrojs/vercel"
 // https://astro.build/config
 export default defineConfig({
     adapter: vercel(),
-    integrations: [clerk()],
+    integrations: [
+        clerk({
+            signInUrl: "/sign-in",
+            signUpUrl: "/sign-in",
+            waitlistUrl: "/waitlist",
+        }),
+    ],
     output: "server",
     vite: {
         plugins: [tailwindcss()],
