@@ -1,0 +1,27 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import Terminal from "@/layouts/Terminal.astro"
+import "@/globals.css"
+---
+
+<Layout>
+    <Terminal>
+        <div class="grid justify-items-center gap-6 text-center">
+            <p
+                class="text-accent text-xs font-semibold tracking-widest uppercase"
+            >
+                [ my bad ]
+            </p>
+            <p class="text-muted-foreground max-w-2xl text-sm uppercase">
+                Something broke. The devs are aware and deeply underpaid.
+                Consider sponsoring the project so this never happens again.
+            </p>
+            <a
+                href="/"
+                class="text-accent text-xs font-semibold tracking-widest uppercase underline-offset-4 hover:underline"
+            >
+                [ go home ]
+            </a>
+        </div>
+    </Terminal>
+</Layout>
