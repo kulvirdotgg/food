@@ -4,11 +4,11 @@ import { UserButton } from "@clerk/astro/components"
 import Layout from "@/layouts/Layout.astro"
 import Terminal from "@/layouts/Terminal.astro"
 import Loading from "@/components/loading.astro"
+import Recommendations from "@/components/recommendations.astro"
 import "@/globals.css"
 
 const { isAuthenticated } = Astro.locals.auth()
 
-// protect the route by checking if the user is signed in
 if (!isAuthenticated) {
     return Astro.redirect("/")
 }
@@ -20,6 +20,8 @@ if (!isAuthenticated) {
     </div>
 
     <Terminal>
-        <Loading />
+        <Recommendations server:defer>
+            <Loading slot="fallback" />
+        </Recommendations>
     </Terminal>
 </Layout>
