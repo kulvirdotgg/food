@@ -1,0 +1,26 @@
+---
+interface Props {
+    label?: string
+    message?: string
+}
+
+const {
+    label = "[ lost? ]",
+    message = "This page doesn't exist. Maybe it never did. Maybe you typed the wrong URL. Either way, not our fault this time.",
+} = Astro.props
+---
+
+<div class="grid justify-items-center gap-6 text-center">
+    <p class="text-accent text-xs font-semibold tracking-widest uppercase">
+        {label}
+    </p>
+    <p class="text-muted-foreground max-w-2xl text-sm uppercase">
+        {message}
+    </p>
+    <a
+        href="/"
+        class="text-accent text-xs font-semibold tracking-widest uppercase underline-offset-4 hover:underline"
+    >
+        [ go home ]
+    </a>
+</div>

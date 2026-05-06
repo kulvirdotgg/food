@@ -1,5 +1,6 @@
 ---
 import Card from "@/components/card.astro"
+import Error from "@/components/error.astro"
 import {
     exploratoryDishSelector,
     recommendationDishSelector,
@@ -16,39 +17,41 @@ const service = new RecommendationService({
     exploratorySelector: new exploratoryDishSelector(),
 })
 
-let recommended, others
+let recommended, others, failed
 try {
     ;({ recommended, others } = await service.recommend(userId))
 } catch {
-    return Astro.redirect("/500")
+    failed = true
 }
 ---
 
-<div class="grid justify-items-center gap-6 text-center">
-    <p class="text-accent text-xs font-semibold tracking-widest uppercase">
-        [ today's picks ]
-    </p>
-    <div
-        class="grid w-full max-w-6xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4"
-    >
-        <Card
-            label={recommended.label}
-            name={recommended.dish.name}
-            index={1}
-            meta={recommended.dish.cuisines.join(", ")}
-            ingredients={recommended.dish.ingredients}
-            class="border-primary/70 bg-primary/10 sm:col-span-2 lg:col-span-3"
-        />
-        {
-            others.map((rec, i) => (
+{
+    failed ? (
+        <Error />
+    ) : (
+        <div class="grid justify-items-center gap-6 text-center">
+            <p class="text-accent text-xs font-semibold tracking-widest uppercase">
+                [ today's picks ]
+            </p>
+            <div class="grid w-full max-w-6xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
                 <Card
-                    label={rec.label}
-                    name={rec.dish.name}
-                    index={i + 2}
-                    meta={rec.dish.cuisines.join(", ")}
-                    ingredients={rec.dish.ingredients}
+                    label={recommended.label}
+                    name={recommended.dish.name}
+                    index={1}
+                    meta={recommended.dish.cuisines.join(", ")}
+                    ingredients={recommended.dish.ingredients}
+                    class="border-primary/70 bg-primary/10 sm:col-span-2 lg:col-span-3"
                 />
-            ))
-        }
-    </div>
-</div>
+                {others.map((rec, i) => (
+                    <Card
+                        label={rec.label}
+                        name={rec.dish.name}
+                        index={i + 2}
+                        meta={rec.dish.cuisines.join(", ")}
+                        ingredients={rec.dish.ingredients}
+                    />
+                ))}
+            </div>
+        </div>
+    )
+}
