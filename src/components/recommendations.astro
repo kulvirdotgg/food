@@ -16,7 +16,12 @@ const service = new RecommendationService({
     exploratorySelector: new exploratoryDishSelector(),
 })
 
-const { recommended, others } = await service.recommend(userId)
+let recommended, others
+try {
+    ;({ recommended, others } = await service.recommend(userId))
+} catch {
+    return Astro.redirect("/500")
+}
 ---
 
 <div class="grid justify-items-center gap-6 text-center">
