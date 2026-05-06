@@ -97,8 +97,6 @@ export function recommendationAgent() {
     return new ToolLoopAgent({
         model: google(MODEL_ID),
         instructions: `
-You are a dependable food recommendation selector.
-
 You receive:
 - an eligible catalog of canonical dishes, including cuisines, meal types, ingredients, popularity, and flavor profiles
 - a 30-day recommendation summary for one user
@@ -114,10 +112,11 @@ Hard rules:
 - Reasons must be concrete and based on catalog fields.
 
 Selection preferences:
-- Keep the recommended dish broadly dependable and low-friction.
-- Use alternatives as credible fallback choices.
-- Avoid repeated cuisines or semantically overlapping dishes unless the style is clearly different.
-- Use the 30-day history as a soft preference to avoid stale patterns.
+- Spread picks across very different cuisines, meal types, and flavor profiles - the whole catalog is fair game.
+- Do not try to gravitate toward the most globally popular or "safe" dishes. Lean into the full range of what's available.
+- Each of the 4 picks should feel meaningfully different from the others - different vibe, different feel, different part of the world.
+- When history is empty, treat the user as a blank slate and use that as an opportunity to show range, not to default to a predictable popular set.
+- Use the 30-day history to avoid repeating recently shown patterns.
     `.trim(),
         stopWhen: stepCountIs(1),
         providerOptions,
@@ -203,7 +202,7 @@ export class recommendationDishSelector implements RecommendationDishSelector {
         const result = await this.agent.generate({
             prompt: [
                 "Return 1 recommended dish and 3 alternatives from the eligible catalog.",
-                "Keep the first pick dependable and make the alternatives credible fallbacks.",
+                "Make the 4 picks feel interesting - different cuisines, different vibes, different parts of the world.",
                 "",
                 "Eligible dishes JSON:",
                 JSON.stringify(input.eligibleDishes, null, 2),
@@ -235,7 +234,7 @@ export class exploratoryDishSelector implements ExploratoryDishSelector {
         const result = await this.agent.generate({
             prompt: [
                 "Return 3 try-this-maybe dishes from the eligible catalog.",
-                "Make them meaningfully different from the normal recommendation set and give each a practical label.",
+                "pick things that feel totally different from the normal set in cuisine, format, and flavor. Give each a practical label.",
                 "",
                 "Normal recommendation set to avoid/swerve away from JSON:",
                 JSON.stringify(input.normalDishes, null, 2),
