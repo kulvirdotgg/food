@@ -20,6 +20,18 @@ if (!isAuthenticated) {
     </div>
 
     <Terminal path="food://terminal/recommend">
+        <Fragment slot="nav">
+            <a
+                href="/"
+                class="text-muted-foreground hover:text-foreground text-xs tracking-widest uppercase transition-colors"
+                >[ home ]</a
+            >
+            <a
+                href="/history"
+                class="text-muted-foreground hover:text-foreground text-xs tracking-widest uppercase transition-colors"
+                >[ history ]</a
+            >
+        </Fragment>
         <Recommendations server:defer>
             <Loading slot="fallback" />
         </Recommendations>

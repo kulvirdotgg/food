@@ -3,6 +3,12 @@ import Terminal from "../layouts/Terminal.astro"
 ---
 
 <Terminal>
+    <a
+        slot="nav"
+        href="/history"
+        class="text-muted-foreground hover:text-foreground text-xs tracking-widest uppercase transition-colors"
+        >[ history ]</a
+    >
     <div class="grid justify-items-center gap-3 text-center">
         <h1
             class="w-full max-w-2xl text-3xl leading-tight font-semibold tracking-widest text-balance uppercase sm:text-5xl"

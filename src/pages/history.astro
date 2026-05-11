@@ -20,6 +20,18 @@ if (!isAuthenticated) {
     </div>
 
     <Terminal path="food://terminal/history" scrollable class="max-w-2xl">
+        <Fragment slot="nav">
+            <a
+                href="/"
+                class="text-muted-foreground hover:text-foreground text-xs tracking-widest uppercase transition-colors"
+                >[ home ]</a
+            >
+            <a
+                href="/recommend"
+                class="text-muted-foreground hover:text-foreground text-xs tracking-widest uppercase transition-colors"
+                >[ generate ]</a
+            >
+        </Fragment>
         <History server:defer>
             <HistoryLoading slot="fallback" />
         </History>
