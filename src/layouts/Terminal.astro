@@ -1,3 +1,11 @@
+---
+interface Props {
+    path?: string
+}
+
+const { path = "food://terminal" } = Astro.props
+---
+
 <section
     aria-label="Food recommendation terminal"
     class="bg-card w-full max-w-5xl border p-2 sm:p-3"
@@ -6,7 +14,7 @@
         <div
             class="text-muted-foreground flex flex-wrap items-center justify-between gap-2 border-b pb-1 text-xs tracking-widest uppercase"
         >
-            <p>food://terminal</p>
+            <p>{path}</p>
             <p>state: ready</p>
         </div>
         <div class="p-6">
