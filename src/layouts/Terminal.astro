@@ -1,14 +1,20 @@
 ---
 interface Props {
     path?: string
+    scrollable?: boolean
+    class?: string
 }
 
-const { path = "food://terminal" } = Astro.props
+const {
+    path = "food://terminal",
+    scrollable = false,
+    class: className,
+} = Astro.props
 ---
 
 <section
     aria-label="Food recommendation terminal"
-    class="bg-card w-full max-w-5xl border p-2 sm:p-3"
+    class:list={["bg-card w-full max-w-5xl border p-2 sm:p-3", className]}
 >
     <div class="bg-background/90 z-20 border p-3 sm:p-4">
         <div
@@ -17,7 +23,13 @@ const { path = "food://terminal" } = Astro.props
             <p>{path}</p>
             <p>state: ready</p>
         </div>
-        <div class="p-6">
+        <div
+            class:list={[
+                "p-6",
+                scrollable &&
+                    "max-h-[58vh] overflow-y-auto [scrollbar-color:var(--color-accent)_transparent] [scrollbar-width:thin]",
+            ]}
+        >
             <slot />
         </div>
     </div>
