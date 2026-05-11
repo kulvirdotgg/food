@@ -1,0 +1,109 @@
+---
+import Error from "@/components/error.astro"
+import { getRecommendationBatches } from "@/lib/db"
+import { catalogById } from "@/lib/catalog"
+import type { Dish } from "@/lib/types"
+
+const { userId } = Astro.locals.auth()
+if (!userId) {
+    return Astro.redirect("/")
+}
+
+type Batch = { batch_id: string; recommended_at: string; dishes: Dish[] }
+
+let batches: Batch[] = []
+let failed = false
+
+try {
+    const raw = await getRecommendationBatches(userId)
+    batches = raw.map(({ batch_id, recommended_at, dish_ids }) => ({
+        batch_id,
+        recommended_at,
+        dishes: dish_ids.flatMap((id) => catalogById.get(id) ?? []),
+    }))
+} catch {
+    failed = true
+}
+---
+
+{
+    failed ? (
+        <Error />
+    ) : batches.length === 0 ? (
+        <div class="grid justify-items-center gap-6 py-4 text-center">
+            <p class="text-accent text-xs font-semibold tracking-widest uppercase">
+                [ no history yet ]
+            </p>
+            <p class="text-muted-foreground max-w-xs text-xs tracking-widest uppercase">
+                you haven't been recommended anything. visit today's picks to
+                get started.
+            </p>
+            <a
+                href="/recommend"
+                class="text-accent text-xs font-semibold tracking-widest uppercase underline-offset-4 hover:underline"
+            >
+                [ → today's picks ]
+            </a>
+        </div>
+    ) : (
+        <div class="grid gap-4">
+            <p class="text-accent text-center text-xs font-semibold tracking-widest uppercase">
+                [ recommendation history ]
+            </p>
+            {batches.map((batch, batchIndex) => (
+                <div class="bg-card/60 border">
+                    <div class="flex items-center justify-between border-b px-3 py-2">
+                        <time
+                            datetime={batch.recommended_at}
+                            class="text-muted-foreground text-[0.6rem] tracking-widest uppercase"
+                        >
+                            {batch.recommended_at}
+                        </time>
+                        <span class="text-accent text-[0.6rem] tracking-widest uppercase">
+                            #{batches.length - batchIndex}
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5 p-2.5 sm:grid-cols-3">
+                        {batch.dishes.map((dish) => (
+                            <div class="border-border/60 grid gap-1 border px-2 py-1.5">
+                                <p class="text-card-foreground text-xs leading-tight font-semibold tracking-widest uppercase">
+                                    {dish.name}
+                                </p>
+                                <p class="text-muted-foreground truncate text-[0.65rem] tracking-widest uppercase">
+                                    {dish.cuisines.join(", ")}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+<script>
+    // Formats an ISO timestamp into "12:00 PM MAY 12, 2026" using the browser's local timezone.
+    // Called for each <time> element after the page loads since the server doesn't know the user's timezone.
+    function formatLocalTime(iso: string): string {
+        const d = new Date(iso)
+        const time = d.toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })
+        const date = d
+            .toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+            })
+            .toUpperCase()
+        return `${time} ${date}`
+    }
+
+    document
+        .querySelectorAll<HTMLTimeElement>("time[datetime]")
+        .forEach((el) => {
+            el.textContent = formatLocalTime(el.dateTime)
+        })
+</script>

@@ -3,8 +3,8 @@ import { UserButton } from "@clerk/astro/components"
 
 import Layout from "@/layouts/Layout.astro"
 import Terminal from "@/layouts/Terminal.astro"
-import Loading from "@/components/loading.astro"
-import Recommendations from "@/components/recommendations.astro"
+import History from "@/components/history.astro"
+import HistoryLoading from "@/components/history-loading.astro"
 import "@/globals.css"
 
 const { isAuthenticated } = Astro.locals.auth()
@@ -19,7 +19,7 @@ if (!isAuthenticated) {
         <UserButton />
     </div>
 
-    <Terminal path="food://terminal/recommend">
+    <Terminal path="food://terminal/history" scrollable class="max-w-2xl">
         <Fragment slot="nav">
             <a
                 href="/"
@@ -27,13 +27,13 @@ if (!isAuthenticated) {
                 >[ home ]</a
             >
             <a
-                href="/history"
+                href="/recommend"
                 class="text-muted-foreground hover:text-foreground text-xs tracking-widest uppercase transition-colors"
-                >[ history ]</a
+                >[ generate ]</a
             >
         </Fragment>
-        <Recommendations server:defer>
-            <Loading slot="fallback" />
-        </Recommendations>
+        <History server:defer>
+            <HistoryLoading slot="fallback" />
+        </History>
     </Terminal>
 </Layout>
