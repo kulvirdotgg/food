@@ -1,6 +1,6 @@
 ---
 import Card from "@/components/card.astro"
-import Error from "@/components/error.astro"
+import ErrorMessage from "@/components/error.astro"
 import {
     exploratoryDishSelector,
     recommendationDishSelector,
@@ -8,9 +8,8 @@ import {
 import { RecommendationService } from "@/lib/recommendation"
 
 const { userId } = Astro.locals.auth()
-if (!userId) {
-    return Astro.redirect("/")
-}
+
+if (!userId) throw new Error("unauthenticated")
 
 const service = new RecommendationService({
     recommendationSelector: new recommendationDishSelector(),
@@ -27,7 +26,7 @@ try {
 
 {
     failed ? (
-        <Error />
+        <ErrorMessage />
     ) : (
         <div class="grid justify-items-center gap-6 text-center">
             <p class="text-accent text-xs font-semibold tracking-widest uppercase">

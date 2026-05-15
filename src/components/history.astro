@@ -1,13 +1,12 @@
 ---
-import Error from "@/components/error.astro"
+import ErrorMessage from "@/components/error.astro"
 import { getRecommendationBatches } from "@/lib/db"
 import { catalogById } from "@/lib/catalog"
 import type { Dish } from "@/lib/types"
 
 const { userId } = Astro.locals.auth()
-if (!userId) {
-    return Astro.redirect("/")
-}
+
+if (!userId) throw new Error("unauthenticated")
 
 type Batch = { batch_id: string; recommended_at: string; dishes: Dish[] }
 
@@ -28,7 +27,7 @@ try {
 
 {
     failed ? (
-        <Error />
+        <ErrorMessage />
     ) : batches.length === 0 ? (
         <div class="grid justify-items-center gap-6 py-4 text-center">
             <p class="text-accent text-xs font-semibold tracking-widest uppercase">
